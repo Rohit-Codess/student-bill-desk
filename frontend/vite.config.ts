@@ -6,24 +6,19 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   
-  // SEO and Performance Optimizations
+  // Build optimizations for Vercel
   build: {
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          utils: ['axios']
+          alerts: ['sweetalert2']
         }
       }
     },
-    // Enable gzip compression
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
-    }
+    // Simple minification for compatibility
+    minify: 'esbuild',
+    target: 'esnext'
   },
   
   // Preview configuration for production testing
