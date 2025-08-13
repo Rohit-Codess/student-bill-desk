@@ -2,10 +2,11 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://www.rtcodex.dev/sitemap.xml
+Sitemap: https://student-bill-desk.rtcodex.dev/sitemap.xml
 
 # RTcodeX - Professional Web Development
 # Contact: https://www.rtcodex.dev/
+# Student Bill Desk: https://student-bill-desk.rtcodex.dev/
 
 # Allow crawling of all content
 Allow: /students

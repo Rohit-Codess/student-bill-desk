@@ -18,10 +18,10 @@
     "url": "https://www.rtcodex.dev/",
     "email": "contact@rtcodex.dev"
   },
-  "homepage": "https://www.rtcodex.dev/",
+  "homepage": "https://student-bill-desk.rtcodex.dev/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rtcodex/student-bill-desk"
+    "url": "https://github.com/Rohit-Codess/student-bill-desk"
   },
   "license": "MIT",
   "type": "module",
