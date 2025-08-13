@@ -6,29 +6,31 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS CONFIGURATION
+// CORS CONFIGURATION - Restricted to specific client URL
 const allowedOrigins = [
-  process.env.PRODUCTION_CLIENT_URL,         // Production frontend URL
-  process.env.CLIENT_URL,                    // Development frontend URL
-  'http://localhost:3000',                   // Default React dev server
-  'http://localhost:5173',                   // Vite dev server alternative
-];
+  'https://student-bill-desk.rtcodex.dev',   // Production frontend URL (primary)
+  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,  // Local dev only
+  process.env.NODE_ENV === 'development' ? 'http://localhost:5173' : null,  // Vite dev only
+].filter(Boolean); // Remove null values
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, curl, etc.)
-    if (!origin) return callback(null, true);
+    console.log(`🔍 CORS Check - Origin: ${origin || 'No Origin'}`);
     
-    // Check if origin is in allowed list OR is a Vercel/Netlify preview
-    if (allowedOrigins.includes(origin) || 
-        origin.includes('.vercel.app') || 
-        origin.includes('.netlify.app') ||
-        origin.includes('rtcodex.dev')) {
-      console.log('✅ CORS allowed for origin:', origin);
+    // Allow requests with no origin only in development (Postman, mobile apps, etc.)
+    if (!origin && process.env.NODE_ENV === 'development') {
+      console.log('✅ CORS allowed - No origin (development mode)');
+      return callback(null, true);
+    }
+    
+    // Strict origin checking - only allow specific domains
+    if (allowedOrigins.includes(origin)) {
+      console.log(`✅ CORS allowed for origin: ${origin}`);
       callback(null, true);
     } else {
-      console.log('❌ CORS blocked for origin:', origin);
-      callback(new Error('Not allowed by CORS policy'));
+      console.log(`❌ CORS BLOCKED for origin: ${origin}`);
+      console.log(`🛡️  Allowed origins: ${allowedOrigins.join(', ')}`);
+      callback(new Error(`CORS policy: Origin ${origin} is not allowed`));
     }
   },
   credentials: true,
@@ -63,21 +65,24 @@ app.use((req, res, next) => {
 // DATABASE CONNECTION
 const connectDB = async () => {
   try {
+    console.log('🔄 Connecting to MongoDB...');
+    
     const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 30000,  // Increased to 30 seconds
       socketTimeoutMS: 45000,
+      connectTimeoutMS: 30000,          // Added connection timeout
     };
 
     await mongoose.connect(process.env.MONGODB_URI, options);
     
     console.log('✅ MongoDB Connected Successfully');
     console.log(`📍 Database: ${mongoose.connection.name}`);
+    console.log(`🌐 Connection State: ${mongoose.connection.readyState}`);
   } catch (error) {
     console.error('❌ MongoDB Connection Error:', error.message);
     console.error('💡 Tip: Check your MONGODB_URI in .env file');
+    console.error('🔧 Connection String:', process.env.MONGODB_URI ? 'Found' : 'Missing');
     process.exit(1);
   }
 };
@@ -99,23 +104,23 @@ app.use('/api', feeRoutes);
 /**
  * Main health check endpoint
  */
-// app.get('/api/health', (req, res) => {
-//   res.json({ 
-//     status: 'OK',
-//     service: 'Student Bill Desk API',
-//     version: '1.0.0',
-//     timestamp: new Date().toISOString(),
-//     environment: process.env.NODE_ENV || 'development',
-//     cors: {
-//       requestOrigin: req.get('Origin') || 'No Origin',
-//       allowedOrigins: allowedOrigins.filter(Boolean)
-//     },
-//     database: {
-//       status: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
-//       name: mongoose.connection.name
-//     }
-//   });
-// });
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    service: 'Student Bill Desk API',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    cors: {
+      requestOrigin: req.get('Origin') || 'No Origin',
+      allowedOrigins: allowedOrigins
+    },
+    database: {
+      status: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+      name: mongoose.connection.name || 'Unknown'
+    }
+  });
+});
 
 /**
  * API documentation endpoint
