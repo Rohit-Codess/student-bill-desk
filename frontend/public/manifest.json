@@ -1,0 +1,37 @@
+{
+  "name": "Student Bill Desk - Fee Management System",
+  "short_name": "Student Bill Desk",
+  "description": "Comprehensive student billing and fee management system built by RTcodeX",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4F46E5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "business", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/vite.svg",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "platform": "wide",
+      "label": "Student Bill Desk Dashboard"
+    }
+  ],
+  "related_applications": [],
+  "developer": {
+    "name": "RTcodeX",
+    "url": "https://www.rtcodex.dev/"
+  }
+}

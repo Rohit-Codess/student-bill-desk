@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.rtcodex.dev/sitemap.xml
+
+# RTcodeX - Professional Web Development
+# Contact: https://www.rtcodex.dev/
+
+# Allow crawling of all content
+Allow: /students
+Allow: /fee-types
+Allow: /generate-fees
+Allow: /fee-assignments
+
+# Crawl-delay for better server performance
+Crawl-delay: 1

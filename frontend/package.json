@@ -1,0 +1,57 @@
+{
+  "name": "student-bill-desk",
+  "private": false,
+  "version": "1.0.0",
+  "description": "Comprehensive student billing and fee management system built with React, Node.js, and MongoDB. Developed by RTcodeX.",
+  "keywords": [
+    "student-management",
+    "billing-system",
+    "fee-management",
+    "react",
+    "nodejs",
+    "mongodb",
+    "rtcodex",
+    "education-erp"
+  ],
+  "author": {
+    "name": "RTcodeX",
+    "url": "https://www.rtcodex.dev/",
+    "email": "contact@rtcodex.dev"
+  },
+  "homepage": "https://www.rtcodex.dev/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rtcodex/student-bill-desk"
+  },
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "build:seo": "npm run build && npm run sitemap",
+    "sitemap": "echo 'Sitemap generated in public/sitemap.xml'"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.11",
+    "axios": "^1.11.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "sweetalert2": "^11.22.3",
+    "tailwindcss": "^4.1.11"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "eslint": "^9.33.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.39.1",
+    "vite": "^7.1.2"
+  }
+}
