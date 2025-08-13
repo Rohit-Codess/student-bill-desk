@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import StudentsPage from './pages/StudentsPage';
@@ -17,6 +17,7 @@ function App() {
           <Route path="generate-fees" element={<GenerateFeesPage />} />
           <Route path="assignments" element={<AssignmentsPage />} />
         </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
