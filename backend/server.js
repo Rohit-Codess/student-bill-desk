@@ -6,22 +6,26 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS CONFIGURATION - Restricted to specific client URL
+// CORS CONFIGURATION - Flexible for development and production
 const allowedOrigins = [
-  'https://student-bill-desk.rtcodex.dev',
+  'https://student-bill-desk.rtcodex.dev',  // Production frontend
+  'http://localhost:3000',                  // Development frontend (React default)
+  'http://localhost:5173',                  // Development frontend (Vite)
+  'http://127.0.0.1:3000',                 // Alternative localhost
+  'http://127.0.0.1:5173',                 // Alternative localhost
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
     console.log(`🔍 CORS Check - Origin: ${origin || 'No Origin'}`);
     
-    // Allow requests with no origin only in development (Postman, mobile apps, etc.)
-    if (!origin && process.env.NODE_ENV === 'development') {
-      console.log('✅ CORS allowed - No origin (development mode)');
+    // Allow requests with no origin (Postman, mobile apps, direct browser access)
+    if (!origin) {
+      console.log('✅ CORS allowed - No origin (direct access/tools)');
       return callback(null, true);
     }
     
-    // Strict origin checking - only allow specific domains
+    // Check if origin is in allowed list
     if (allowedOrigins.includes(origin)) {
       console.log(`✅ CORS allowed for origin: ${origin}`);
       callback(null, true);
