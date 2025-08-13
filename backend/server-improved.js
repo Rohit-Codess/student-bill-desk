@@ -1,3 +1,16 @@
+/**
+ * ============================================================================
+ * STUDENT BILL DESK - BACKEND API SERVER
+ * ============================================================================
+ * A comprehensive student fee management system backend
+ * Built with Express.js, MongoDB, and modern best practices
+ * 
+ * @author RTcodeX - Professional Web Development
+ * @website https://www.rtcodex.dev/
+ * @version 1.0.0
+ * ============================================================================
+ */
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -6,7 +19,9 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// =============================================================================
 // CORS CONFIGURATION
+// =============================================================================
 const allowedOrigins = [
   process.env.PRODUCTION_CLIENT_URL,         // Production frontend URL
   process.env.CLIENT_URL,                    // Development frontend URL
@@ -38,7 +53,9 @@ const corsOptions = {
   preflightContinue: false,
 };
 
+// =============================================================================
 // MIDDLEWARE SETUP
+// =============================================================================
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -60,7 +77,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// =============================================================================
 // DATABASE CONNECTION
+// =============================================================================
 const connectDB = async () => {
   try {
     const options = {
@@ -85,11 +104,32 @@ const connectDB = async () => {
 // Initialize database connection
 connectDB();
 
+// =============================================================================
 // API ROUTES CONFIGURATION
+// =============================================================================
 const studentRoutes = require('./routes/studentRoutes');
 const feeRoutes = require('./routes/feeRoutes');
+
+/**
+ * Student Management Routes
+ * - GET    /api/students           - Get all students
+ * - POST   /api/students           - Create new student
+ * - GET    /api/students/:id       - Get student by ID
+ * - PUT    /api/students/:id       - Update student
+ * - DELETE /api/students/:id       - Delete student (cascade delete fees)
+ */
 app.use('/api/students', studentRoutes);
 
+/**
+ * Fee Management Routes
+ * - GET    /api/types              - Get all fee types
+ * - POST   /api/types              - Create fee type
+ * - PUT    /api/types/:id          - Update fee type
+ * - DELETE /api/types/:id          - Delete fee type
+ * - POST   /api/generate           - Generate monthly fees
+ * - GET    /api/assignments        - Get fee assignments with filters
+ * - PUT    /api/assignments/:id/status - Update assignment status
+ */
 app.use('/api', feeRoutes);
 
 // =============================================================================
@@ -99,23 +139,23 @@ app.use('/api', feeRoutes);
 /**
  * Main health check endpoint
  */
-// app.get('/api/health', (req, res) => {
-//   res.json({ 
-//     status: 'OK',
-//     service: 'Student Bill Desk API',
-//     version: '1.0.0',
-//     timestamp: new Date().toISOString(),
-//     environment: process.env.NODE_ENV || 'development',
-//     cors: {
-//       requestOrigin: req.get('Origin') || 'No Origin',
-//       allowedOrigins: allowedOrigins.filter(Boolean)
-//     },
-//     database: {
-//       status: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
-//       name: mongoose.connection.name
-//     }
-//   });
-// });
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK',
+    service: 'Student Bill Desk API',
+    version: '1.0.0',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    cors: {
+      requestOrigin: req.get('Origin') || 'No Origin',
+      allowedOrigins: allowedOrigins.filter(Boolean)
+    },
+    database: {
+      status: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+      name: mongoose.connection.name
+    }
+  });
+});
 
 /**
  * API documentation endpoint
@@ -152,7 +192,9 @@ app.get('/api/docs', (req, res) => {
   });
 });
 
+// =============================================================================
 // ERROR HANDLING MIDDLEWARE
+// =============================================================================
 
 /**
  * Global error handler
@@ -189,7 +231,9 @@ app.use('*', (req, res) => {
   });
 });
 
+// =============================================================================
 // SERVER STARTUP
+// =============================================================================
 app.listen(PORT, () => {
   console.log('');
   console.log('🚀 Student Bill Desk API Server Started');
