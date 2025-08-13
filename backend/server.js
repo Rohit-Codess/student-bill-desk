@@ -8,10 +8,8 @@ const PORT = process.env.PORT || 5000;
 
 // CORS CONFIGURATION - Restricted to specific client URL
 const allowedOrigins = [
-  'https://student-bill-desk.rtcodex.dev',   // Production frontend URL (primary)
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,  // Local dev only
-  process.env.NODE_ENV === 'development' ? 'http://localhost:5173' : null,  // Vite dev only
-].filter(Boolean); // Remove null values
+  'https://student-bill-desk.rtcodex.dev',
+];
 
 const corsOptions = {
   origin: function (origin, callback) {
