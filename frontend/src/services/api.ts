@@ -3,6 +3,14 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 // API service functions
 export const apiService = {
+  async deleteFeeAssignment(id: string) {
+    const response = await fetch(`${API_BASE_URL}/assignments/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed to delete fee assignment');
+    const result = await response.json();
+    return result;
+  },
   // Student APIs
   async getStudents() {
     const response = await fetch(`${API_BASE_URL}/students`);

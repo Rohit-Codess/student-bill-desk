@@ -100,8 +100,8 @@ const StudentManager = () => {
       fatherName: student.fatherName,
       gender: student.gender,
       class: student.class,
-      mobileNumber: student.mobileNumber,
-      address: student.address,
+      mobileNumber: student.mobileNumber || '',
+      address: student.address || '',
       isActive: student.isActive,
     });
   };
@@ -291,14 +291,13 @@ const StudentManager = () => {
 
             <div>
               <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                Mobile Number
+                Mobile Number <span className="text-xs text-gray-400">(optional)</span>
               </label>
               <input
                 type="tel"
                 id="mobileNumber"
                 value={formData.mobileNumber}
                 onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
-                required
                 placeholder="Enter 10-digit mobile number"
                 pattern="[6-9][0-9]{9}"
                 maxLength={10}
@@ -324,13 +323,12 @@ const StudentManager = () => {
 
           <div>
             <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
-              Address
+              Address <span className="text-xs text-gray-400">(optional)</span>
             </label>
             <textarea
               id="address"
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              required
               placeholder="Enter complete address"
               rows={3}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"

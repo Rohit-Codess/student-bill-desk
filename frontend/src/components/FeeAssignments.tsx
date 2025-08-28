@@ -10,9 +10,10 @@ const FeeAssignments = () => {
   const [error, setError] = useState('');
   
   const [filters, setFilters] = useState({
-    month: '',
-    studentId: '',
-    status: '',
+  month: '',
+  studentId: '',
+  status: '',
+  class: '',
   });
 
   const fetchData = async () => {
@@ -35,9 +36,10 @@ const FeeAssignments = () => {
   const fetchAssignments = useCallback(async () => {
     try {
       const params: Record<string, string> = {};
-      if (filters.month) params.month = filters.month;
-      if (filters.studentId) params.studentId = filters.studentId;
-      if (filters.status) params.status = filters.status;
+  if (filters.month) params.month = filters.month;
+  if (filters.studentId) params.studentId = filters.studentId;
+  if (filters.status) params.status = filters.status;
+  if (filters.class) params.class = filters.class;
 
       const data = await apiService.getFeeAssignments(params);
       setAssignments(data.assignments || data);
@@ -107,7 +109,7 @@ const FeeAssignments = () => {
   };
 
   const clearFilters = () => {
-    setFilters({ month: '', studentId: '', status: '' });
+  setFilters({ month: '', studentId: '', status: '', class: '' });
   };
 
   const getStatusStyles = (status: string) => {
@@ -206,7 +208,6 @@ const FeeAssignments = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
               />
             </div>
-            
             <div>
               <label htmlFor="studentId" className="block text-sm font-medium text-gray-700 mb-2">
                 Filter by Student
@@ -225,7 +226,22 @@ const FeeAssignments = () => {
                 ))}
               </select>
             </div>
-            
+            <div>
+              <label htmlFor="class" className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Class
+              </label>
+              <select
+                id="class"
+                value={filters.class}
+                onChange={(e) => setFilters({ ...filters, class: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="">All Classes</option>
+                {['1','2','3','4','5','6','7','8','9','10','11','12','Graduate'].map(cls => (
+                  <option key={cls} value={cls}>{cls === 'Graduate' ? 'Graduate' : `Class ${cls}`}</option>
+                ))}
+              </select>
+            </div>
             <div>
               <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
                 Filter by Status
@@ -242,7 +258,6 @@ const FeeAssignments = () => {
                 <option value="waived">Waived</option>
               </select>
             </div>
-            
             <div className="flex items-end">
               <button 
                 onClick={clearFilters} 
@@ -299,6 +314,9 @@ const FeeAssignments = () => {
                           <div className="text-sm font-medium text-gray-900">
                             {assignment.studentId?.name || 'Unknown Student'}
                           </div>
+                          <div className="text-xs text-gray-500">
+                            {assignment.studentId?.class ? (assignment.studentId.class === 'Graduate' ? 'Graduate' : `Class ${assignment.studentId.class}`) : ''}
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -317,15 +335,56 @@ const FeeAssignments = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <select
-                        value={assignment.status}
-                        onChange={(e) => updateStatus(assignment._id, e.target.value, assignment.studentId?.name || 'Student')}
-                        className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="paid">Paid</option>
-                        <option value="waived">Waived</option>
-                      </select>
+                      <div className="flex gap-2 justify-end">
+                        <select
+                          value={assignment.status}
+                          onChange={(e) => updateStatus(assignment._id, e.target.value, assignment.studentId?.name || 'Student')}
+                          className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="paid">Paid</option>
+                          <option value="waived">Waived</option>
+                        </select>
+                        <button
+                          onClick={async () => {
+                            const result = await Swal.fire({
+                              title: 'Delete Assignment',
+                              text: 'Are you sure you want to delete this fee assignment?',
+                              icon: 'warning',
+                              showCancelButton: true,
+                              confirmButtonColor: '#EF4444',
+                              cancelButtonColor: '#6B7280',
+                              confirmButtonText: 'Yes, delete it!',
+                              cancelButtonText: 'Cancel',
+                            });
+                            if (result.isConfirmed) {
+                              try {
+                                await apiService.deleteFeeAssignment(assignment._id);
+                                await Swal.fire({
+                                  title: 'Deleted!',
+                                  text: 'Fee assignment deleted successfully.',
+                                  icon: 'success',
+                                  timer: 2000,
+                                  showConfirmButton: false,
+                                  toast: true,
+                                  position: 'top-end'
+                                });
+                                fetchAssignments();
+                              } catch {
+                                await Swal.fire({
+                                  title: 'Error!',
+                                  text: 'Failed to delete fee assignment.',
+                                  icon: 'error',
+                                  confirmButtonColor: '#EF4444'
+                                });
+                              }
+                            }
+                          }}
+                          className="px-3 py-1 border border-red-300 rounded-lg text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200"
+                        >
+                          🗑️ Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

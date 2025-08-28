@@ -334,6 +334,29 @@ router.get('/assignments/:id', async (req, res) => {
 });
 
 // PUT /api/fees/assignments/:id/status - Update fee assignment status
+// DELETE /api/fees/assignments/:id - Delete fee assignment
+router.delete('/assignments/:id', async (req, res) => {
+  try {
+    const assignment = await FeeAssignment.findByIdAndDelete(req.params.id);
+    if (!assignment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Fee assignment not found'
+      });
+    }
+    res.json({
+      success: true,
+      message: 'Fee assignment deleted successfully',
+      data: assignment
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting fee assignment',
+      error: error.message
+    });
+  }
+});
 router.put('/assignments/:id/status', async (req, res) => {
   try {
     const { status } = req.body;

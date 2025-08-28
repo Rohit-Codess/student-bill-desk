@@ -33,16 +33,16 @@ const studentSchema = new mongoose.Schema({
   },
   mobileNumber: {
     type: String,
-    required: [true, 'Mobile number is required'],
     trim: true,
-    match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit mobile number']
+    match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit mobile number'],
+    default: ''
   },
   address: {
     type: String,
-    required: [true, 'Address is required'],
     trim: true,
     minlength: [10, 'Address must be at least 10 characters long'],
-    maxlength: [500, 'Address cannot exceed 500 characters']
+    maxlength: [500, 'Address cannot exceed 500 characters'],
+    default: ''
   },
   isActive: {
     type: Boolean,

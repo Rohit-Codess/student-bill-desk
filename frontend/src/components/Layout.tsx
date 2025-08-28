@@ -30,10 +30,7 @@ const Layout = () => {
                   Student Bill Desk
                 </span>
               </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                Comprehensive Fee Management System | 
                 <span className="text-blue-600 font-medium ml-1">Powered by RTcodeX</span>
-              </p>
             </Link>
 
             {/* Navigation */}
@@ -65,10 +62,10 @@ const Layout = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 text-white mt-auto">
+      {/* <footer className="bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 text-white mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Brand Section */}
+
             <div className="text-center md:text-left">
               <h3 className="text-xl font-bold mb-2">Student Bill Desk</h3>
               <p className="text-gray-300 text-sm">
@@ -76,7 +73,7 @@ const Layout = () => {
               </p>
             </div>
 
-            {/* Features Section */}
+            
             <div className="text-center">
               <h4 className="font-semibold mb-3">Key Features</h4>
               <ul className="text-gray-300 text-sm space-y-1">
@@ -87,7 +84,7 @@ const Layout = () => {
               </ul>
             </div>
 
-            {/* RTcodeX Section */}
+            
             <div className="text-center md:text-right">
               <h4 className="font-semibold mb-3">Built & Developed by</h4>
               <a 
@@ -105,7 +102,7 @@ const Layout = () => {
             </div>
           </div>
 
-          {/* Bottom Bar */}
+          
           <div className="border-t border-gray-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
             <p>© 2025 Student Bill Desk. All rights reserved.</p>
             <div className="flex items-center gap-4 mt-2 md:mt-0">
@@ -122,7 +119,7 @@ const Layout = () => {
             </div>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 };

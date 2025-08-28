@@ -35,25 +35,11 @@ const HomePage = () => {
   return (
     <div className="space-y-8">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl text-white p-8 text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Student Bill Desk</h1>
-        <p className="text-xl opacity-90 mb-6">
+      <div className="bg-white rounded-2xl text-black p-8 text-center ">
+        <h1 className="text-2xl font-bold mb-4">Welcome to Student Bill Desk 🧑‍💻</h1>
+        <p className="text-sm opacity-90 mb-6">
           Comprehensive fee management system for educational institutions
         </p>
-        <div className="flex justify-center gap-4">
-          <Link 
-            to="/students" 
-            className="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-          >
-            Get Started
-          </Link>
-          <Link 
-            to="/assignments" 
-            className="border border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:text-blue-600 transition-colors"
-          >
-            View Dashboard
-          </Link>
-        </div>
       </div>
 
       {/* Features Grid */}
