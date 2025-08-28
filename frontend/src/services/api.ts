@@ -11,7 +11,15 @@ export const apiService = {
     return result.success ? result.data : [];
   },
 
-  async createStudent(student: { name: string; isActive: boolean }) {
+  async createStudent(student: { 
+    name: string; 
+    fatherName: string; 
+    gender: 'Male' | 'Female' | 'Other'; 
+    class: string; 
+    mobileNumber: string; 
+    address: string; 
+    isActive: boolean 
+  }) {
     const response = await fetch(`${API_BASE_URL}/students`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -22,7 +30,15 @@ export const apiService = {
     return result;
   },
 
-  async updateStudent(id: string, student: { name: string; isActive: boolean }) {
+  async updateStudent(id: string, student: { 
+    name: string; 
+    fatherName: string; 
+    gender: 'Male' | 'Female' | 'Other'; 
+    class: string; 
+    mobileNumber: string; 
+    address: string; 
+    isActive: boolean 
+  }) {
     const response = await fetch(`${API_BASE_URL}/students/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -50,7 +66,7 @@ export const apiService = {
     return result.success ? result.data : [];
   },
 
-  async createFeeType(feeType: { name: string; amount: number }) {
+  async createFeeType(feeType: { name: string; amount: number; applicableClasses: string[] }) {
     const response = await fetch(`${API_BASE_URL}/types`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -61,7 +77,7 @@ export const apiService = {
     return result;
   },
 
-  async updateFeeType(id: string, feeType: { name: string; amount: number }) {
+  async updateFeeType(id: string, feeType: { name: string; amount: number; applicableClasses: string[] }) {
     const response = await fetch(`${API_BASE_URL}/types/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -87,6 +103,22 @@ export const apiService = {
       method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to generate fees');
+    const result = await response.json();
+    return result;
+  },
+
+  async generateSelectiveFees(params: {
+    month: string;
+    studentIds?: string[];
+    classes?: string[];
+    feeTypeIds?: string[];
+  }) {
+    const response = await fetch(`${API_BASE_URL}/generate-selective`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    if (!response.ok) throw new Error('Failed to generate selective fees');
     const result = await response.json();
     return result;
   },

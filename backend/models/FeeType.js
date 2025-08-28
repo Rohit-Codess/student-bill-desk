@@ -19,6 +19,20 @@ const feeTypeSchema = new mongoose.Schema({
       },
       message: 'Fee amount must be a valid positive number'
     }
+  },
+  applicableClasses: {
+    type: [String],
+    required: [true, 'Applicable classes are required'],
+    enum: {
+      values: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'Graduate'],
+      message: 'Class must be from 1 to 12 or Graduate'
+    },
+    validate: {
+      validator: function(arr) {
+        return arr.length > 0;
+      },
+      message: 'At least one class must be selected'
+    }
   }
 }, {
   timestamps: true

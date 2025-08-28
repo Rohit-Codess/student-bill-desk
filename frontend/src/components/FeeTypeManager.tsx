@@ -12,6 +12,7 @@ const FeeTypeManager = () => {
   const [formData, setFormData] = useState({
     name: '',
     amount: 0,
+    applicableClasses: [] as string[],
   });
 
   useEffect(() => {
@@ -41,6 +42,18 @@ const FeeTypeManager = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate at least one class is selected
+    if (formData.applicableClasses.length === 0) {
+      await Swal.fire({
+        title: 'Validation Error',
+        text: 'Please select at least one applicable class',
+        icon: 'error',
+        confirmButtonColor: '#EF4444'
+      });
+      return;
+    }
+    
     try {
       if (editingFeeType) {
         await apiService.updateFeeType(editingFeeType._id, formData);
@@ -66,7 +79,7 @@ const FeeTypeManager = () => {
         });
       }
       
-      setFormData({ name: '', amount: 0 });
+      setFormData({ name: '', amount: 0, applicableClasses: [] });
       setEditingFeeType(null);
       fetchFeeTypes();
     } catch (err) {
@@ -85,6 +98,7 @@ const FeeTypeManager = () => {
     setFormData({
       name: feeType.name,
       amount: feeType.amount,
+      applicableClasses: feeType.applicableClasses,
     });
   };
 
@@ -147,7 +161,7 @@ const FeeTypeManager = () => {
 
   const cancelEdit = () => {
     setEditingFeeType(null);
-    setFormData({ name: '', amount: 0 });
+    setFormData({ name: '', amount: 0, applicableClasses: [] });
   };
 
   const formatCurrency = (amount: number) => {
@@ -226,6 +240,78 @@ const FeeTypeManager = () => {
               />
             </div>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Applicable Classes
+            </label>
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-300">
+              <div className="grid grid-cols-4 md:grid-cols-7 gap-2 mb-3">
+                {['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].map((cls) => (
+                  <label key={cls} className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.applicableClasses.includes(cls)}
+                      onChange={(e) => {
+                        const classes = [...formData.applicableClasses];
+                        if (e.target.checked) {
+                          classes.push(cls);
+                        } else {
+                          const index = classes.indexOf(cls);
+                          if (index > -1) classes.splice(index, 1);
+                        }
+                        setFormData({ ...formData, applicableClasses: classes });
+                      }}
+                      className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">Class {cls}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="flex items-center space-x-2">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.applicableClasses.includes('Graduate')}
+                    onChange={(e) => {
+                      const classes = [...formData.applicableClasses];
+                      if (e.target.checked) {
+                        classes.push('Graduate');
+                      } else {
+                        const index = classes.indexOf('Graduate');
+                        if (index > -1) classes.splice(index, 1);
+                      }
+                      setFormData({ ...formData, applicableClasses: classes });
+                    }}
+                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Graduate</span>
+                </label>
+              </div>
+              <div className="mt-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ 
+                    ...formData, 
+                    applicableClasses: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'Graduate'] 
+                  })}
+                  className="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors"
+                >
+                  Select All
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, applicableClasses: [] })}
+                  className="text-xs px-3 py-1 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                >
+                  Clear All
+                </button>
+              </div>
+              {formData.applicableClasses.length === 0 && (
+                <p className="text-red-600 text-sm mt-2">⚠️ Please select at least one class</p>
+              )}
+            </div>
+          </div>
           
           <div className="flex flex-wrap gap-3">
             <button 
@@ -294,6 +380,19 @@ const FeeTypeManager = () => {
                     {formatCurrency(feeType.amount)}
                   </div>
                   <p className="text-sm text-gray-600">per student</p>
+                  <div className="mt-2">
+                    <p className="text-xs text-gray-600 mb-1">Applicable Classes:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {feeType.applicableClasses.map((cls) => (
+                        <span
+                          key={cls}
+                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                        >
+                          {cls === 'Graduate' ? 'Graduate' : `Class ${cls}`}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="flex gap-2">

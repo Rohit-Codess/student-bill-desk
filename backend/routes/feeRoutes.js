@@ -35,17 +35,20 @@ router.post('/generate', async (req, res) => {
       });
     }
 
-    // Prepare fee assignments to insert
+    // Prepare fee assignments to insert (only for applicable classes)
     const feeAssignments = [];
     for (const student of activeStudents) {
       for (const feeType of feeTypes) {
-        feeAssignments.push({
-          studentId: student._id,
-          month: month,
-          feeTypeId: feeType._id,
-          amount: feeType.amount,
-          status: 'pending'
-        });
+        // Check if the fee type is applicable to the student's class
+        if (feeType.applicableClasses.includes(student.class)) {
+          feeAssignments.push({
+            studentId: student._id,
+            month: month,
+            feeTypeId: feeType._id,
+            amount: feeType.amount,
+            status: 'pending'
+          });
+        }
       }
     }
 
@@ -80,8 +83,8 @@ router.post('/generate', async (req, res) => {
     const populatedAssignments = await FeeAssignment.find({
       _id: { $in: insertedAssignments.map(a => a._id) }
     })
-    .populate('studentId', 'name isActive')
-    .populate('feeTypeId', 'name amount');
+    .populate('studentId', 'name isActive class')
+    .populate('feeTypeId', 'name amount applicableClasses');
 
     res.json({
       success: true,
@@ -110,6 +113,146 @@ router.post('/generate', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error generating fee assignments',
+      error: error.message
+    });
+  }
+});
+
+// POST /api/fees/generate-selective - Generate fees with selective parameters
+router.post('/generate-selective', async (req, res) => {
+  try {
+    const { month, studentIds, classes, feeTypeIds } = req.body;
+
+    // Validate month format
+    if (!month || !/^\d{4}-\d{2}$/.test(month)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid month format. Use YYYY-MM format (e.g., 2024-01)'
+      });
+    }
+
+    // Build student filter
+    const studentFilter = { isActive: true };
+    if (studentIds && studentIds.length > 0) {
+      studentFilter._id = { $in: studentIds };
+    }
+    if (classes && classes.length > 0) {
+      studentFilter.class = { $in: classes };
+    }
+
+    // Get filtered students
+    const students = await Student.find(studentFilter);
+    if (students.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No students found matching the criteria'
+      });
+    }
+
+    // Build fee type filter
+    const feeTypeFilter = {};
+    if (feeTypeIds && feeTypeIds.length > 0) {
+      feeTypeFilter._id = { $in: feeTypeIds };
+    }
+
+    // Get filtered fee types
+    const feeTypes = await FeeType.find(feeTypeFilter);
+    if (feeTypes.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No fee types found matching the criteria'
+      });
+    }
+
+    // Prepare fee assignments to insert
+    const feeAssignments = [];
+    for (const student of students) {
+      for (const feeType of feeTypes) {
+        // Check if the fee type is applicable to the student's class
+        if (feeType.applicableClasses.includes(student.class)) {
+          feeAssignments.push({
+            studentId: student._id,
+            month: month,
+            feeTypeId: feeType._id,
+            amount: feeType.amount,
+            status: 'pending'
+          });
+        }
+      }
+    }
+
+    let insertedCount = 0;
+    let duplicateCount = 0;
+    let skippedCount = 0;
+    const insertedAssignments = [];
+
+    // Insert fee assignments one by one to handle duplicates gracefully
+    for (const assignment of feeAssignments) {
+      try {
+        const newAssignment = new FeeAssignment(assignment);
+        const savedAssignment = await newAssignment.save();
+        insertedCount++;
+        insertedAssignments.push(savedAssignment);
+      } catch (error) {
+        if (error.code === 11000) {
+          duplicateCount++;
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    // Calculate skipped assignments (fee types not applicable to student classes)
+    const totalPossibleAssignments = students.length * feeTypes.length;
+    skippedCount = totalPossibleAssignments - feeAssignments.length;
+
+    // Populate the inserted assignments for better response
+    const populatedAssignments = await FeeAssignment.find({
+      _id: { $in: insertedAssignments.map(a => a._id) }
+    })
+    .populate('studentId', 'name isActive class')
+    .populate('feeTypeId', 'name amount applicableClasses');
+
+    res.json({
+      success: true,
+      message: `Selective fee generation completed for ${month}`,
+      data: {
+        month: month,
+        filters: {
+          studentIds,
+          classes,
+          feeTypeIds
+        },
+        summary: {
+          filteredStudents: students.length,
+          filteredFeeTypes: feeTypes.length,
+          possibleAssignments: totalPossibleAssignments,
+          applicableAssignments: feeAssignments.length,
+          insertedCount: insertedCount,
+          duplicateCount: duplicateCount,
+          skippedCount: skippedCount
+        },
+        insertedAssignments: populatedAssignments,
+        ...(duplicateCount > 0 && {
+          duplicateInfo: {
+            message: `${duplicateCount} assignments already existed and were skipped`,
+            count: duplicateCount
+          }
+        }),
+        ...(skippedCount > 0 && {
+          skipInfo: {
+            message: `${skippedCount} assignments were skipped (fee types not applicable to student classes)`,
+            count: skippedCount
+          }
+        })
+      }
+    });
+
+  } catch (error) {
+    console.error('Error in selective fee generation:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error generating selective fee assignments',
       error: error.message
     });
   }
@@ -253,9 +396,9 @@ router.get('/types', async (req, res) => {
 // POST /api/fees/types - Create new fee type
 router.post('/types', async (req, res) => {
   try {
-    const { name, amount } = req.body;
+    const { name, amount, applicableClasses } = req.body;
     
-    const feeType = new FeeType({ name, amount });
+    const feeType = new FeeType({ name, amount, applicableClasses });
     const savedFeeType = await feeType.save();
     
     res.status(201).json({
@@ -290,11 +433,11 @@ router.post('/types', async (req, res) => {
 // PUT /api/fees/types/:id - Update fee type
 router.put('/types/:id', async (req, res) => {
   try {
-    const { name, amount } = req.body;
+    const { name, amount, applicableClasses } = req.body;
     
     const feeType = await FeeType.findByIdAndUpdate(
       req.params.id,
-      { name, amount },
+      { name, amount, applicableClasses },
       { new: true, runValidators: true }
     );
 

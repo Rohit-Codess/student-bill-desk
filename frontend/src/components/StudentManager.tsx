@@ -11,6 +11,11 @@ const StudentManager = () => {
   
   const [formData, setFormData] = useState({
     name: '',
+    fatherName: '',
+    gender: 'Male' as 'Male' | 'Female' | 'Other',
+    class: '1' as '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | '11' | '12' | 'Graduate',
+    mobileNumber: '',
+    address: '',
     isActive: true,
   });
 
@@ -66,7 +71,15 @@ const StudentManager = () => {
         });
       }
       
-      setFormData({ name: '', isActive: true });
+      setFormData({ 
+        name: '', 
+        fatherName: '',
+        gender: 'Male',
+        class: '1',
+        mobileNumber: '',
+        address: '',
+        isActive: true 
+      });
       setEditingStudent(null);
       fetchStudents();
     } catch (err) {
@@ -84,6 +97,11 @@ const StudentManager = () => {
     setEditingStudent(student);
     setFormData({
       name: student.name,
+      fatherName: student.fatherName,
+      gender: student.gender,
+      class: student.class,
+      mobileNumber: student.mobileNumber,
+      address: student.address,
       isActive: student.isActive,
     });
   };
@@ -158,7 +176,15 @@ const StudentManager = () => {
 
   const cancelEdit = () => {
     setEditingStudent(null);
-    setFormData({ name: '', isActive: true });
+    setFormData({ 
+      name: '', 
+      fatherName: '',
+      gender: 'Male',
+      class: '1',
+      mobileNumber: '',
+      address: '',
+      isActive: true 
+    });
   };
 
   if (loading) {
@@ -211,6 +237,74 @@ const StudentManager = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               />
             </div>
+
+            <div>
+              <label htmlFor="fatherName" className="block text-sm font-medium text-gray-700 mb-2">
+                Father's Name
+              </label>
+              <input
+                type="text"
+                id="fatherName"
+                value={formData.fatherName}
+                onChange={(e) => setFormData({ ...formData, fatherName: e.target.value })}
+                required
+                placeholder="Enter father's name"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
+                Gender
+              </label>
+              <select
+                id="gender"
+                value={formData.gender}
+                onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'Male' | 'Female' | 'Other' })}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="class" className="block text-sm font-medium text-gray-700 mb-2">
+                Class
+              </label>
+              <select
+                id="class"
+                value={formData.class}
+                onChange={(e) => setFormData({ ...formData, class: e.target.value as '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | '11' | '12' | 'Graduate' })}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                {['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'Graduate'].map((cls) => (
+                  <option key={cls} value={cls}>
+                    {cls === 'Graduate' ? 'Graduate' : `Class ${cls}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                Mobile Number
+              </label>
+              <input
+                type="tel"
+                id="mobileNumber"
+                value={formData.mobileNumber}
+                onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
+                required
+                placeholder="Enter 10-digit mobile number"
+                pattern="[6-9][0-9]{9}"
+                maxLength={10}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
             
             <div>
               <label htmlFor="isActive" className="block text-sm font-medium text-gray-700 mb-2">
@@ -226,6 +320,21 @@ const StudentManager = () => {
                 <option value="false">Inactive</option>
               </select>
             </div>
+          </div>
+
+          <div>
+            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+              Address
+            </label>
+            <textarea
+              id="address"
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              required
+              placeholder="Enter complete address"
+              rows={3}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            />
           </div>
           
           <div className="flex flex-wrap gap-3">
@@ -277,7 +386,8 @@ const StudentManager = () => {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Details</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact & Class</th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
                   <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -286,17 +396,28 @@ const StudentManager = () => {
               <tbody className="divide-y divide-gray-200">
                 {students.map((student) => (
                   <tr key={student._id} className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                            <span className="text-blue-600 font-medium text-sm">
+                        <div className="flex-shrink-0 h-12 w-12">
+                          <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                            <span className="text-blue-600 font-medium text-lg">
                               {student.name.charAt(0).toUpperCase()}
                             </span>
                           </div>
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">{student.name}</div>
+                          <div className="text-sm text-gray-600">Father: {student.fatherName}</div>
+                          <div className="text-sm text-gray-500">{student.gender}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-900">
+                        <div className="font-medium">{student.class === 'Graduate' ? 'Graduate' : `Class ${student.class}`}</div>
+                        <div className="text-gray-600">{student.mobileNumber}</div>
+                        <div className="text-gray-500 text-xs truncate max-w-xs" title={student.address}>
+                          {student.address}
                         </div>
                       </div>
                     </td>

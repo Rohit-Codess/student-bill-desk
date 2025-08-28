@@ -13,7 +13,11 @@ router.get('/', async (req, res) => {
       filter.isActive = isActive === 'true';
     }
     if (search) {
-      filter.name = { $regex: search, $options: 'i' }; // Case-insensitive search
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { fatherName: { $regex: search, $options: 'i' } },
+        { mobileNumber: { $regex: search, $options: 'i' } }
+      ];
     }
 
     const students = await Student.find(filter).sort({ name: 1 });
@@ -60,10 +64,15 @@ router.get('/:id', async (req, res) => {
 // POST /api/students - Create new student
 router.post('/', async (req, res) => {
   try {
-    const { name, isActive } = req.body;
+    const { name, fatherName, gender, class: studentClass, mobileNumber, address, isActive } = req.body;
     
     const student = new Student({
       name,
+      fatherName,
+      gender,
+      class: studentClass,
+      mobileNumber,
+      address,
       isActive: isActive !== undefined ? isActive : true
     });
 
@@ -94,11 +103,11 @@ router.post('/', async (req, res) => {
 // PUT /api/students/:id - Update student
 router.put('/:id', async (req, res) => {
   try {
-    const { name, isActive } = req.body;
+    const { name, fatherName, gender, class: studentClass, mobileNumber, address, isActive } = req.body;
     
     const student = await Student.findByIdAndUpdate(
       req.params.id,
-      { name, isActive },
+      { name, fatherName, gender, class: studentClass, mobileNumber, address, isActive },
       { new: true, runValidators: true }
     );
 
